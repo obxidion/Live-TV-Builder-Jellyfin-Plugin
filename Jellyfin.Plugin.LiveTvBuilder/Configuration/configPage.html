@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Live TV Builder</title>
+</head>
+<body>
+<div id="liveTvBuilderConfigPage"
+     data-role="page"
+     class="page type-interior pluginConfigurationPage"
+     data-require="emby-input,emby-select,emby-button,emby-checkbox">
+    <div data-role="content">
+        <div class="content-primary">
+            <form id="liveTvBuilderConfigForm">
+                <h2>Live TV Builder</h2>
+                <p class="fieldDescription">
+                    Pick a lineup and this plugin will configure Jellyfin Live TV
+                    (an M3U tuner + XMLTV guide) automatically.
+                </p>
+
+                <div class="selectContainer">
+                    <label class="selectLabel" for="ltbCountry">Country</label>
+                    <select is="emby-select" id="ltbCountry" name="ltbCountry">
+                        <option value="US">United States</option>
+                        <option value="CA">Canada</option>
+                        <option value="MX">Mexico</option>
+                    </select>
+                </div>
+
+                <div class="inputContainer">
+                    <input is="emby-input" type="text" id="ltbPostal" label="Postal / ZIP code" />
+                </div>
+
+                <div class="selectContainer">
+                    <label class="selectLabel" for="ltbProvider">Provider lineup</label>
+                    <select is="emby-select" id="ltbProvider" name="ltbProvider"></select>
+                </div>
+
+                <div class="checkboxContainer">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="ltbLangEn" />
+                        <span>English</span>
+                    </label>
+                </div>
+                <div class="checkboxContainer">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="ltbLangFr" />
+                        <span>French</span>
+                    </label>
+                </div>
+                <div class="checkboxContainer">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="ltbLangEs" />
+                        <span>Spanish</span>
+                    </label>
+                </div>
+                <div class="fieldDescription">
+                    Leave all languages unchecked for no filter (all channels).
+                </div>
+
+                <div>
+                    <button is="emby-button" type="submit" class="raised button-submit block">
+                        <span>Save &amp; Configure Live TV</span>
+                    </button>
+                </div>
+
+                <p id="ltbStatus" style="margin-top:1em;"></p>
+            </form>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+    (function () {
+        var pluginId = "b9f8e2a4-6c1d-4f3a-9e7b-2a5c8d1f0e34";
+
+        function getLangs() {
+            var langs = [];
+            if (document.querySelector("#ltbLangEn").checked) { langs.push("en"); }
+            if (document.querySelector("#ltbLangFr").checked) { langs.push("fr"); }
+            if (document.querySelector("#ltbLangEs").checked) { langs.push("es"); }
+            return langs;
+        }
+
+        // Providers are country-scoped, and the download endpoints reject a
+        // provider/country mismatch (HTTP 400). So always load providers for the
+        // currently-selected country, and reload when the country changes.
+        function loadProviders(country, selectedId) {
+            var select = document.querySelector("#ltbProvider");
+            var url = ApiClient.getUrl("LiveTvBuilder/Providers", { country: country });
+            return ApiClient.getJSON(url).then(function (res) {
+                var providers = (res && res.providers) || [];
+                select.innerHTML = providers.map(function (p) {
+                    return '<option value="' + p.id + '">'
+                        + p.name + " (" + p.channelCount + " channels)</option>";
+                }).join("");
+                if (selectedId) { select.value = selectedId; }
+            });
+        }
+
+        function load() {
+            Dashboard.showLoadingMsg();
+            ApiClient.getPluginConfiguration(pluginId).then(function (config) {
+                var country = config.Country || "US";
+                document.querySelector("#ltbCountry").value = country;
+                document.querySelector("#ltbPostal").value = config.PostalCode || "";
+                var langs = (config.Languages || "").split(",");
+                document.querySelector("#ltbLangEn").checked = langs.indexOf("en") !== -1;
+                document.querySelector("#ltbLangFr").checked = langs.indexOf("fr") !== -1;
+                document.querySelector("#ltbLangEs").checked = langs.indexOf("es") !== -1;
+                loadProviders(country, config.ProviderId).then(function () {
+                    Dashboard.hideLoadingMsg();
+                }, function () {
+                    Dashboard.hideLoadingMsg();
+                    document.querySelector("#ltbStatus").textContent =
+                        "Could not load providers. Check the API base URL and server logs.";
+                });
+            });
+        }
+
+        function onCountryChange() {
+            document.querySelector("#ltbStatus").textContent = "";
+            loadProviders(document.querySelector("#ltbCountry").value, null);
+        }
+
+        function save(e) {
+            e.preventDefault();
+            Dashboard.showLoadingMsg();
+            var payload = {
+                Country: document.querySelector("#ltbCountry").value,
+                PostalCode: document.querySelector("#ltbPostal").value,
+                ProviderId: document.querySelector("#ltbProvider").value,
+                Languages: getLangs().join(","),
+                Addons: ""
+            };
+            ApiClient.ajax({
+                type: "POST",
+                url: ApiClient.getUrl("LiveTvBuilder/Apply"),
+                data: JSON.stringify(payload),
+                contentType: "application/json"
+            }).then(function () {
+                Dashboard.hideLoadingMsg();
+                document.querySelector("#ltbStatus").textContent =
+                    "Saved. Live TV is configured and a guide refresh was started — channels should appear shortly.";
+                Dashboard.processPluginConfigurationUpdateResult();
+            }, function () {
+                Dashboard.hideLoadingMsg();
+                document.querySelector("#ltbStatus").textContent =
+                    "Something went wrong applying the configuration. Check the server logs.";
+            });
+            return false;
+        }
+
+        document.querySelector("#liveTvBuilderConfigPage")
+            .addEventListener("pageshow", load);
+        document.querySelector("#ltbCountry")
+            .addEventListener("change", onCountryChange);
+        document.querySelector("#liveTvBuilderConfigForm")
+            .addEventListener("submit", save);
+    })();
+    </script>
+</div>
+</body>
+</html>

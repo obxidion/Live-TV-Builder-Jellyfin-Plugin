@@ -1,0 +1,12 @@
+[
+  {
+    "guid": "b9f8e2a4-6c1d-4f3a-9e7b-2a5c8d1f0e34",
+    "name": "Live TV Builder",
+    "description": "Auto-configure Jellyfin Live TV from a Live TV Builder lineup (country, postal code, provider, languages).",
+    "overview": "Pick a lineup inside Jellyfin and get Live TV configured automatically.",
+    "owner": "obxidion",
+    "category": "Live TV",
+    "imageUrl": "",
+    "versions": []
+  }
+]

@@ -1,0 +1,18 @@
+---
+name: "Live TV Builder"
+guid: "b9f8e2a4-6c1d-4f3a-9e7b-2a5c8d1f0e34"
+version: "1.0.0.0"
+targetAbi: "10.10.0.0"
+framework: "net8.0"
+owner: "obxidion"
+overview: "Auto-configure Jellyfin Live TV from a Live TV Builder lineup."
+description: >
+  Pick your country, postal code, provider lineup, and languages inside Jellyfin
+  and the plugin wires up Live TV (an M3U tuner + XMLTV guide) pointing at Live
+  TV Builder's auto-refreshing URLs. No copy-pasting of URLs.
+category: "Live TV"
+artifacts:
+  - "Jellyfin.Plugin.LiveTvBuilder.dll"
+changelog: |
+  ### 1.0.0.0
+  - Initial release: config page that auto-configures the M3U tuner and XMLTV guide.
