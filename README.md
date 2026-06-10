@@ -49,43 +49,7 @@ manual install, copy it into a `Live TV Builder` folder under your Jellyfin
 3. **Catalog → Live TV Builder → Install**, then restart Jellyfin.
 4. Configure under **Dashboard → Plugins → Live TV Builder**.
 
-## Releasing (GitHub Actions + JPRM)
-
-Releases are automated by `.github/workflows/build.yaml` using
-[JPRM](https://github.com/oddstr13/jellyfin-plugin-repository-manager):
-
-1. Bump the version in `build.yaml` and the `.csproj` (`AssemblyVersion` /
-   `FileVersion`), commit, and push to `main`.
-2. Create a **GitHub Release** with a tag like `v1.0.0`.
-3. The workflow builds the plugin, zips it, attaches the zip to the release,
-   computes its checksum, and updates `manifest.json` (committing it back to
-   `main`).
-4. Users with the repository added see the update in their catalog.
-
-> The JPRM CLI flags can vary slightly between versions; if a step fails, run
-> `jprm plugin build --help` / `jprm repo add --help` and adjust the workflow.
-
-## Project layout
-
-```
-Live-TV-Builder-Jellyfin-Plugin/
-├── Jellyfin.Plugin.LiveTvBuilder/
-│   ├── Jellyfin.Plugin.LiveTvBuilder.csproj
-│   ├── Plugin.cs                       # plugin entry + config page registration
-│   ├── LiveTvConfigurator.cs           # writes TunerHost + ListingsProvider
-│   ├── Api/LiveTvBuilderController.cs   # admin-only proxy + Apply endpoints
-│   └── Configuration/
-│       ├── PluginConfiguration.cs      # persisted settings
-│       └── configPage.html             # settings UI
-├── .github/workflows/build.yaml        # CI: build + release + manifest
-├── build.yaml                          # JPRM build metadata
-├── manifest.json                       # the plugin repository
-├── .gitignore
-├── LICENSE
-└── README.md
-```
 
 ## License
 
-MIT (see `LICENSE`). Note: third-party Jellyfin plugins commonly use GPL-3.0 to
-match the Jellyfin ecosystem — switch the license if you prefer that.
+MIT (see `LICENSE`). 
