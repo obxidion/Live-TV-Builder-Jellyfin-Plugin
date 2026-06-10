@@ -12,7 +12,7 @@
                 "version": "1.0.3.0",
                 "changelog": "### 1.0.0.0\n- Initial release: config page that auto-configures the M3U tuner and XMLTV guide.\n",
                 "targetAbi": "10.10.0.0",
-                "sourceUrl": "https://github.com/obxidion/Live-TV-Builder-Jellyfin-Plugin/releases/download/v1.0.3/live-tv-builder/live-tv-builder_1.0.3.0.zip",
+                "sourceUrl": "https://github.com/obxidion/Live-TV-Builder-Jellyfin-Plugin/releases/download/v1.0.3/live-tv-builder_1.0.3.0.zip",
                 "checksum": "8cef738a7606f70dacebbc60dac6530a",
                 "timestamp": "2026-06-10T23:17:35Z"
             }
