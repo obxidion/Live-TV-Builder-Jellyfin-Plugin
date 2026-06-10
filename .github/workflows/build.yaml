@@ -1,0 +1,45 @@
+on:
+  release:
+    types: [published]
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the released tag (build from the tagged commit)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Install JPRM
+        run: python -m pip install --upgrade jprm
+      - name: Build plugin zip
+        id: build
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          mkdir -p ./artifacts
+          zipfile=$(jprm --verbosity=debug plugin build . --version "$version" --output ./artifacts)
+          echo "zipfile=$zipfile" >> "$GITHUB_OUTPUT"
+      - name: Attach zip to the GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.build.outputs.zipfile }}
+      - name: Update manifest.json on main
+        run: |
+          git fetch origin main
+          git checkout main
+          base="https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF_NAME}"
+          jprm repo add --url "$base" ./manifest.json "${{ steps.build.outputs.zipfile }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add manifest.json
+          git commit -m "Update manifest for ${GITHUB_REF_NAME}" || echo "No manifest changes"
+          git push origin HEAD:main
