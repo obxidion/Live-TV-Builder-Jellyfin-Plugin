@@ -1,3 +1,4 @@
+[![Listed on JellyWatch Hub](https://jellywatch.app/hub/live-tv-builder-jellyfin-plugin/badge.svg)](https://jellywatch.app/hub/live-tv-builder-jellyfin-plugin)
 # Live TV Builder — Jellyfin Plugin
 
 Auto-configure Jellyfin's native Live TV from a
