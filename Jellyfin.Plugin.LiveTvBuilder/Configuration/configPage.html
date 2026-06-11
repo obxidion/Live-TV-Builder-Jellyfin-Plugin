@@ -20,11 +20,7 @@
 
                 <div class="selectContainer">
                     <label class="selectLabel" for="ltbCountry">Country</label>
-                    <select is="emby-select" id="ltbCountry" name="ltbCountry">
-                        <option value="US">United States</option>
-                        <option value="CA">Canada</option>
-                        <option value="MX">Mexico</option>
-                    </select>
+                    <select is="emby-select" id="ltbCountry" name="ltbCountry"></select>
                 </div>
 
                 <div class="inputContainer">
@@ -81,6 +77,34 @@
             return langs;
         }
 
+        // Country list is sourced live from the API so a new country becomes
+        // selectable here with no plugin release. Falls back to US/CA/MX if the
+        // call fails so the page is still usable offline.
+        function loadCountries(selectedCode) {
+            var select = document.querySelector("#ltbCountry");
+            var url = ApiClient.getUrl("LiveTvBuilder/Countries");
+            return ApiClient.getJSON(url).then(function (res) {
+                var countries = (res && res.countries) || [];
+                if (!countries.length) {
+                    countries = [
+                        { code: "US", name: "United States" },
+                        { code: "CA", name: "Canada" },
+                        { code: "MX", name: "Mexico" }
+                    ];
+                }
+                select.innerHTML = countries.map(function (c) {
+                    return '<option value="' + c.code + '">' + c.name + "</option>";
+                }).join("");
+                if (selectedCode) { select.value = selectedCode; }
+            }, function () {
+                select.innerHTML =
+                    '<option value="US">United States</option>'
+                    + '<option value="CA">Canada</option>'
+                    + '<option value="MX">Mexico</option>';
+                if (selectedCode) { select.value = selectedCode; }
+            });
+        }
+
         // Providers are country-scoped, and the download endpoints reject a
         // provider/country mismatch (HTTP 400). So always load providers for the
         // currently-selected country, and reload when the country changes.
@@ -101,13 +125,14 @@
             Dashboard.showLoadingMsg();
             ApiClient.getPluginConfiguration(pluginId).then(function (config) {
                 var country = config.Country || "US";
-                document.querySelector("#ltbCountry").value = country;
                 document.querySelector("#ltbPostal").value = config.PostalCode || "";
                 var langs = (config.Languages || "").split(",");
                 document.querySelector("#ltbLangEn").checked = langs.indexOf("en") !== -1;
                 document.querySelector("#ltbLangFr").checked = langs.indexOf("fr") !== -1;
                 document.querySelector("#ltbLangEs").checked = langs.indexOf("es") !== -1;
-                loadProviders(country, config.ProviderId).then(function () {
+                loadCountries(country).then(function () {
+                    return loadProviders(document.querySelector("#ltbCountry").value, config.ProviderId);
+                }).then(function () {
                     Dashboard.hideLoadingMsg();
                 }, function () {
                     Dashboard.hideLoadingMsg();

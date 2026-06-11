@@ -1,21 +1,12 @@
 [
-    {
-        "guid": "b9f8e2a4-6c1d-4f3a-9e7b-2a5c8d1f0e34",
-        "name": "Live TV Builder",
-        "description": "Pick your country, postal code, provider lineup, and languages inside Jellyfin and the plugin wires up Live TV (an M3U tuner + XMLTV guide) pointing at Live TV Builder's auto-refreshing URLs. No copy-pasting of URLs.\n",
-        "overview": "Auto-configure Jellyfin Live TV from a Live TV Builder lineup.",
-        "owner": "obxidion",
-        "category": "Live TV",
-        "imageUrl": "",
-        "versions": [
-            {
-                "version": "1.0.3.0",
-                "changelog": "### 1.0.0.0\n- Initial release: config page that auto-configures the M3U tuner and XMLTV guide.\n",
-                "targetAbi": "10.10.0.0",
-                "sourceUrl": "https://github.com/obxidion/Live-TV-Builder-Jellyfin-Plugin/releases/download/v1.0.3/live-tv-builder_1.0.3.0.zip",
-                "checksum": "8cef738a7606f70dacebbc60dac6530a",
-                "timestamp": "2026-06-10T23:17:35Z"
-            }
-        ]
-    }
+  {
+    "guid": "b9f8e2a4-6c1d-4f3a-9e7b-2a5c8d1f0e34",
+    "name": "Live TV Builder",
+    "description": "Auto-configure Jellyfin Live TV from a Live TV Builder lineup (country, postal code, provider, languages).",
+    "overview": "Pick a lineup inside Jellyfin and get Live TV configured automatically.",
+    "owner": "obxidion",
+    "category": "Live TV",
+    "imageUrl": "https://raw.githubusercontent.com/obxidion/Live-TV-Builder-Jellyfin-Plugin/main/logo.png",
+    "versions": []
+  }
 ]

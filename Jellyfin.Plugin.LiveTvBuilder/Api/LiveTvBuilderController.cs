@@ -45,6 +45,21 @@ public class LiveTvBuilderController : ControllerBase
         Plugin.Instance!.Configuration.ApiBaseUrl.TrimEnd('/');
 
     /// <summary>
+    /// Proxy: returns the upstream supported-country list. Sourced live from the
+    /// API so a new country becomes selectable in the plugin with no plugin release.
+    /// </summary>
+    [HttpGet("Countries")]
+    public async Task<ActionResult> GetCountries(CancellationToken cancellationToken)
+    {
+        var url = $"{ApiBase}/api/countries";
+        var client = _httpClientFactory.CreateClient();
+        var body = await client
+            .GetStringAsync(url, cancellationToken)
+            .ConfigureAwait(false);
+        return Content(body, "application/json");
+    }
+
+    /// <summary>
     /// Proxy: returns the upstream provider list, scoped to a country when given.
     /// Country scoping matters because the download endpoints reject a
     /// provider/country mismatch with HTTP 400.
