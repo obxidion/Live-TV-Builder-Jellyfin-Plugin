@@ -4,13 +4,7 @@ Auto-configure Jellyfin's native Live TV from a
 [Live TV Builder](https://livetvbuilder.replit.app) lineup. Pick your
 **country**, **postal/ZIP code**, **provider lineup**, and **languages** on a
 settings page inside Jellyfin, and the plugin wires up an **M3U tuner** + an
-**XMLTV guide** for you — no copy-pasting URLs.
-
-This is the **Tier 1 "config helper"** plugin described in the
-[spec](../docs/jellyfin-plugin-spec.md). It reuses Jellyfin's built-in M3U/XMLTV
-support and Live TV Builder's existing public, auto-refreshing download URLs, so
-it needs no account login and no changes to the Live TV Builder backend.
-
+**XMLTV guide** for you. No more hunting for or copy-pasting URLs that you have to sift through 14,000 channels just to find the channels you want.
 
 ## How it works
 
