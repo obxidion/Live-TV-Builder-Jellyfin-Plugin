@@ -22,9 +22,12 @@ settings page inside Jellyfin, and the plugin wires up an **M3U tuner** + an
 
 ## Requirements
 
-- Jellyfin **10.10.x** (adjust `targetAbi` in `build.yaml` and the package
-  versions in the `.csproj` for other versions).
-- .NET 8 SDK (to build locally).
+- Jellyfin Server **12.2** (target ABI `12.2.0.0`).
+- .NET **10 SDK** (to build locally).
+
+Plugin **1.1.0.0** targets Jellyfin 12.2. Older Jellyfin 10.10 servers should
+keep the previous plugin release. Back up your Jellyfin configuration before
+upgrading the server. The plugin identity and configuration fields are unchanged.
 
 ## Build locally
 
@@ -44,6 +47,27 @@ manual install, copy it into a `Live TV Builder` folder under your Jellyfin
 3. **Catalog → Live TV Builder → Install**, then restart Jellyfin.
 4. Configure under **Dashboard → Plugins → Live TV Builder**.
 
+
+## Publishing this upgrade
+
+1. Copy the contents of this source folder into the repository root, including
+   the hidden `.github` folder and `.gitignore`. Do not nest the folder inside
+   the existing repository.
+2. Commit and push the changes to `main`.
+3. Create and publish a GitHub Release tagged **`v1.1.0.0`**, targeting that commit.
+4. Wait for **Build & Release Plugin** to succeed. It builds and attaches the
+   installable plugin ZIP and updates `manifest.json` with its URL and checksum.
+5. On Jellyfin 12.2, refresh the plugin catalog, install the update, and restart.
+
+The included `manifest.json` preserves the existing published version. Do not
+replace it with an empty template or manually advertise the new version before
+its release asset exists. If the repository manifest changes before you push,
+preserve the newer entries too.
+
+This archive is **source code for updating GitHub**, not an installable plugin
+ZIP. The Release workflow creates the installable ZIP. The plugin compiles
+against Jellyfin 12.2; installation and guide refresh should still be checked on
+your Jellyfin server.
 
 ## License
 
